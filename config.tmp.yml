@@ -1,0 +1,3 @@
+app:
+  env: development
+  grpcAddress: 0.0.0.0:20000

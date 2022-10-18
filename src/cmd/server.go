@@ -15,7 +15,9 @@ import (
 	"os/signal"
 	"social-work_notification_service/src/config"
 	notification_transport "social-work_notification_service/src/features/notification/transport"
+	tracking_transport "social-work_notification_service/src/features/tracking/transport"
 	notificationpb "social-work_notification_service/src/pb/notification"
+	trackingpb "social-work_notification_service/src/pb/tracking"
 	"sync"
 )
 
@@ -23,7 +25,9 @@ func server(config config.IConfig) *cobra.Command {
 	return &cobra.Command{
 		Use: "server",
 		Run: func(cmd *cobra.Command, args []string) {
-			ctx := context.Background()
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
 			var wg sync.WaitGroup
 			wg.Add(2)
 			go runGrpcServer(ctx, config, &wg)
@@ -39,9 +43,11 @@ func runGrpcServer(ctx context.Context, config config.IConfig, wg *sync.WaitGrou
 	server := grpc.NewServer()
 	reflection.Register(server)
 
-	notificationTransport := notification_transport.New()
+	notificationTransport := notification_transport.New(ctx)
+	trackingTransport := tracking_transport.New(ctx)
 
 	notificationpb.RegisterNotificationServiceServer(server, notificationTransport)
+	trackingpb.RegisterTrackingServiceServer(server, trackingTransport)
 
 	lis, err := net.Listen("tcp", config.GetGrpcAddress())
 	if err != nil {

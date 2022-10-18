@@ -1,0 +1,17 @@
+syntax="proto3";
+
+package tracking;
+
+option go_package="./trackingpb";
+
+message GetViewProfileByUserIdRequest {
+
+}
+
+message GetViewProfileByUserIdResponse {
+  string message = 1;
+}
+
+service TrackingService {
+  rpc GetViewProfileByUserId(GetViewProfileByUserIdRequest) returns(GetViewProfileByUserIdResponse);
+}

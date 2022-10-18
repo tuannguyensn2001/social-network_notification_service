@@ -10,8 +10,10 @@ type transport struct {
 	notificationpb.UnimplementedNotificationServiceServer
 }
 
-func New() *transport {
-	return &transport{}
+func New(ctx context.Context) *transport {
+	result := &transport{}
+
+	return result
 }
 
 func (t *transport) GetByUserId(ctx context.Context, request *notificationpb.GetByUserIdRequest) (*notificationpb.GetByUserIdResponse, error) {
